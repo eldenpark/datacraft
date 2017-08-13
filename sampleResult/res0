@@ -1,0 +1,3 @@
+jQuery(function(){%NWL%$(document).ready(function(){%NWL%$(".tdRevert").click(tdRevert);%NWL%$(".tdDelete").click(tdDelete);%NWL%2
+jQuery(function(){%NWL%$(document).ready(function(){%NWL%$(".tdRevert").click(tdRevert);%NWL%$(".tdDelete").click(tdDelete);%NWL%$(".tdUpdate").click(tdUpdate);%NWL%2
+jQuery(function(){%NWL%$(document).ready(function(){%NWL%$(".tdRevert").click(tdRevert);%NWL%$(".tdDelete").click(tdDelete);%NWL%$(".tdUpdate").click(tdUpdate);%NWL%3
