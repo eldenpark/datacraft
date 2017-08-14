@@ -1,77 +1,72 @@
 const fs = require('fs');
 const path = require('path');
+
 const getAllPaths = require('./utils/getAllPaths').default;
-const split = require('./utils/split').default;
-const getDistancesBetweenSameWords = require('./utils/getDistancesBetweenSameWords').default;
-const hasCommonElem = require('./utils/hasCommonElem').default;
-const writeWithPrevLines = require('./utils/writeWithPrevLines').default;
+const removeExtension = require('./utils/removeExtension').default;
 
 /**
- * Picks a sentence where the distance between the two same words
- * is same with that of any of previous sentences.
+ * Very dangerous usage. State is outside of function. 
+ * This approache will be valid as long as it works well.
  */
-const _processSingleFile = (files, i, ws, cb) => {
-  let res = [];
-  let prevLines = [];
-  let prevLinesSplit = [];
-
-  console.log(`Processing file: ${files[i]}`)
-
-  var rl = require('readline').createInterface({
-      input: fs.createReadStream(files[i]),
-      output: ws
-    });
-
-  rl.on('line', function (line) {
-    if (prevLines.length > 10) {
-      prevLines.shift();
-      prevLinesSplit.shift();
-    }
-
-    line = line.trim();
-    lineSplit = split(line);
-    for (var i = 0; i < prevLinesSplit.length; i++) {
-      let dist0 = getDistancesBetweenSameWords(prevLinesSplit[i]);
-      let dist1 = getDistancesBetweenSameWords(lineSplit);
-      if (hasCommonElem(dist0, dist1)) {
-        writeWithPrevLines(rl.output, prevLines, line, i);
-      }
-    }
-    prevLinesSplit.push(lineSplit);
-    prevLines.push(line);
-  });
-
-  rl.on('close', function() {
-    rl.input.destroy();
-    _processNextFile(files, i + 1, ws);
-  });
+const state = {
+  init: false,
+  processors: undefined,
+  processorIdx: undefined,
+  paths: undefined
 };
 
-const _processNextFile = (files, i, ws) => {
-  if (i < files.length) {
-    _processSingleFile(files, i, ws, _processNextFile);
-  } else {
-    console.log(`Finished processing all files`);
+const _initProcessorState = (processors, paths) => {
+  state.processors = processors;
+  state.processorIdx = 0;
+  state.paths = paths;
+  state.init = true;
+};
+
+const _nextProcessor = () => {
+  ++state.processorIdx;
+  _process(state.processors, state.processorIdx, state.paths, _nextProcessor);
+};
+
+const _process = (processors, idx, paths, nextProcessor) => {
+  if (processors.length == idx) {
+    console.log('Finished processing by all processors');
+    return;
   }
-};
 
-const processAllFiles = (files) => {
+  const processor = processors[idx];
+  const processorName = removeExtension(processor);
+  if (!processorName.length) _process(processors, idx + 1);
+  
+  console.log(`Start processing with ${processorName}`);
+
   const ws = fs.createWriteStream(
-    path.resolve(__dirname, '..', 'result', 'res0'), 
+    path.resolve(__dirname, '..', 'result', `${processorName}.result`), 
     {
       flags: 'w', 
       defaultEncoding: 'utf8' 
     });
 
-  if (!files.length) {
+  const processorModule = require(path.resolve(__dirname, 'processors', processor)).default;
+  processorModule(paths, 0, ws, nextProcessor);
+}
+
+const processAllFiles = (paths) => {
+  if (!paths.length) {
     console.log(`No file to process. Process ended`);
   } else {
-    _processSingleFile(files, 0, ws, _processNextFile);
+    // Iterate over processors.
+    fs.readdir(path.resolve(__dirname, 'processors'), (err, processors) => {
+      _initProcessorState(processors, paths);
+      _process(processors, 0, paths, _nextProcessor)
+    });
   }
 };
 
-getAllPaths("./data", function(err, results) {
+/**
+ * Entry point of the application.
+ */
+getAllPaths("./data", function(err, paths) {
   if (err) throw err;
-  console.log(`Number of files to process: ${results.length}`)
-  processAllFiles(results);
+  console.log(`Number of files to process: ${paths.length}`)
+  processAllFiles(paths);
 });
