@@ -1,10 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-/**
- * File names to exclude.
- */
-const EXCLUDED_FILE_NAME = ['.DS_Store'];
+const EXCLUDED_FILE_NAME = require('../constants/ExcludedFileName').default;
 
 /**
  * Currently not in use.
