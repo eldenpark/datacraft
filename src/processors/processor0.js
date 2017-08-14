@@ -43,6 +43,7 @@ const process = (paths, i, ws, nextProcessor) => {
       let dist1 = getDistancesBetweenSameWords(lineSplit);
       if (hasCommonElem(dist0, dist1)) {
         writeWithPrevLines(rl.output, prevLines, line, i);
+        break;
       }
     }
     prevLinesSplit.push(lineSplit);
