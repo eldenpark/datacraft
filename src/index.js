@@ -11,15 +11,11 @@ const writeWithPrevLines = require('./utils/writeWithPrevLines').default;
  * is same with that of any of previous sentences.
  */
 const _processSingleFile = (files, i, ws, cb) => {
-  var a = files[i].split('/');
-  if (a[a.length - 1] == '.DS_Store') {
-    return _processNextFile(files, i + 1, ws);
-  }
   let res = [];
   let prevLines = [];
   let prevLinesSplit = [];
 
-  console.log(`files to process: ${files[i]}`)
+  console.log(`Processing file: ${files[i]}`)
 
   var rl = require('readline').createInterface({
       input: fs.createReadStream(files[i]),
@@ -27,7 +23,6 @@ const _processSingleFile = (files, i, ws, cb) => {
     });
 
   rl.on('line', function (line) {
-    console.log(line)
     if (prevLines.length > 10) {
       prevLines.shift();
       prevLinesSplit.shift();
@@ -36,7 +31,6 @@ const _processSingleFile = (files, i, ws, cb) => {
     line = line.trim();
     lineSplit = split(line);
     for (var i = 0; i < prevLinesSplit.length; i++) {
-      console.log(i)
       let dist0 = getDistancesBetweenSameWords(prevLinesSplit[i]);
       let dist1 = getDistancesBetweenSameWords(lineSplit);
       if (hasCommonElem(dist0, dist1)) {
