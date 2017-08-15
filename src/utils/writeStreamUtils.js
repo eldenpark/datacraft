@@ -6,4 +6,6 @@ const writeWithPrevLines = (ws, prevLines, line, i) => {
   ws.write(str);
 };
 
-exports.default = writeWithPrevLines;
+module.exports = {
+  writeWithPrevLines
+}

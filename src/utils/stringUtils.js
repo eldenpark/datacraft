@@ -18,4 +18,6 @@ const split = (text) => {
   return res
 };
 
-exports.default = split;
+module.exports = {
+  split
+}

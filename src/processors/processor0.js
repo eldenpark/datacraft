@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const split = require('../utils/split').default;
-const getDistancesBetweenSameWords = require('../utils/getDistancesBetweenSameWords').default;
-const hasCommonElem = require('../utils/hasCommonElem').default;
-const writeWithPrevLines = require('../utils/writeWithPrevLines').default;
+const split = require('../utils/stringUtils').split;
+const getDistancesBetweenSameElems = require('../utils/arrayUtils').getDistancesBetweenSameElems;
+const hasCommonElem = require('../utils/arrayUtils').hasCommonElem;
+const writeWithPrevLines = require('../utils/writeStreamUtils').writeWithPrevLines;
 
 /**
  * Picks a sentence where the distance between the two same words is same 
@@ -15,14 +15,12 @@ const writeWithPrevLines = require('../utils/writeWithPrevLines').default;
 const process = (paths, i, ws, done) => {
   if (i > paths.length - 1) {
     console.log(`Finished processing with ${__filename}`);
-    done();
-    return;
+    return done();
   }
-  let res = [];
+  console.log(`Processing file: ${paths[i]}`);
+
   let prevLines = [];
   let prevLinesSplit = [];
-
-  console.log(`Processing file: ${paths[i]}`);
 
   var rl = require('readline').createInterface({
       input: fs.createReadStream(paths[i]),
@@ -38,8 +36,8 @@ const process = (paths, i, ws, done) => {
     line = line.trim();
     lineSplit = split(line);
     for (var i = 0; i < prevLinesSplit.length; i++) {
-      let dist0 = getDistancesBetweenSameWords(prevLinesSplit[i]);
-      let dist1 = getDistancesBetweenSameWords(lineSplit);
+      let dist0 = getDistancesBetweenSameElems(prevLinesSplit[i]);
+      let dist1 = getDistancesBetweenSameElems(lineSplit);
       if (hasCommonElem(dist0, dist1)) {
         writeWithPrevLines(rl.output, prevLines, line, i);
         break;
