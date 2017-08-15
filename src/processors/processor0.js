@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const getAllPaths = require('../utils/getAllPaths').default;
 const split = require('../utils/split').default;
 const getDistancesBetweenSameWords = require('../utils/getDistancesBetweenSameWords').default;
 const hasCommonElem = require('../utils/hasCommonElem').default;
@@ -13,11 +12,11 @@ const writeWithPrevLines = require('../utils/writeWithPrevLines').default;
  * 
  * Done to each file of data
  */
-const process = (paths, i, ws, nextProcessor) => {
+const process = (paths, i, ws, done) => {
   if (i > paths.length - 1) {
     console.log(`Finished processing with ${__filename}`);
-    nextProcessor();
-    return 3;
+    done();
+    return;
   }
   let res = [];
   let prevLines = [];
@@ -53,7 +52,7 @@ const process = (paths, i, ws, nextProcessor) => {
   rl.on('close', function() {
     rl.input.destroy();
     // Process files in pseudo-synchronous manner
-    process(paths, i + 1, ws, nextProcessor);
+    process(paths, i + 1, ws, done);
   });
 };
 
