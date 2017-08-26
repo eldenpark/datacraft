@@ -45,8 +45,8 @@ const _process = (processorIdx, nextProcessor) => {
   const processorName = extractFileName(processorPath);
   if (!processorName.length) _process(processors, processorIdx + 1);
 
-  console.log(`Start processing with ${processorName}`);
-
+  const resultPath = path.resolve(_processState.resultPath, `${processorName}.result`);
+  console.log(`Start processing with ${processorName} \nResult: ${resultPath}`);
   const ws = fs.createWriteStream(
     path.resolve(_processState.resultPath, `${processorName}.result`), 
     {
