@@ -3,9 +3,8 @@ const _removeExtension = (fileName) => {
 }
 
 const extractFileName = (path) => {
-  const str = path.split('/');
-  const token = str[str.length - 1];
-  return _removeExtension(token);
+  const filename = path.replace(/^.*[\\\/]/, '');
+  return _removeExtension(filename);
 }
 
 module.exports = {
