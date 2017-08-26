@@ -102,7 +102,6 @@ typings/
 
 # End of https://www.gitignore.io/api/git,node,macos,visualstudiocode
 
-.vscode/
 /data/*
 /result/*
 _backup/

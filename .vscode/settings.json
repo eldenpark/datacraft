@@ -1,0 +1,12 @@
+{
+  "git.ignoreLimitWarning": true,
+  "files.exclude": {
+    "**/.DS_Store": false
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "_backup/**": true,
+    "data/": true
+  }
+}
