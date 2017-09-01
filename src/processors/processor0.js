@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const winston = require('winston');
 
 const split = require('../utils/stringUtils').split;
 const getDistancesBetweenSameElems = require('../utils/arrayUtils').getDistancesBetweenSameElems;
@@ -12,12 +13,12 @@ const writeWithPrevLines = require('../utils/writeStreamUtils').writeWithPrevLin
  * 
  * Done to each file of data
  */
-const process = (paths, i, ws, done) => {
+const doProcess = (paths, i, ws, done) => {
   if (i > paths.length - 1) {
-    console.log(`Finished processing with ${__filename}`);
+    winston.info(`Finished processing with ${__filename}`);
     return done();
   }
-  console.log(`Processing file: ${paths[i]}`);
+  // console.log(`Processing file: ${paths[i]}`);
 
   let prevLines = [];
   let prevLinesSplit = [];
@@ -50,8 +51,8 @@ const process = (paths, i, ws, done) => {
   rl.on('close', function() {
     rl.input.destroy();
     // Process files in pseudo-synchronous manner
-    process(paths, i + 1, ws, done);
+    doProcess(paths, i + 1, ws, done);
   });
 };
 
-exports.default = process;
+exports.default = doProcess;
