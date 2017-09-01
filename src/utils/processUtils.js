@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const winston = require('winston');
 
 const getAllPaths = require('./pathUtils').walk;
 const extractFileName = require('./fileNameUtils').extractFileName;
@@ -13,15 +14,17 @@ const _processState = {
   dataPaths: undefined,
   processorPaths: undefined,
   processorIdx: undefined,
-  resultPath: undefined
+  resultPath: undefined,
+  processorName: undefined
 };
 
-const _initProcessorState = (dataPaths, processorPaths, resultPath) => {
+const _initProcessorState = (dataPaths, processorPaths, resultPath, processorName) => {
   _processState.init = true;
   _processState.dataPaths = dataPaths;
   _processState.processorPaths = processorPaths;
   _processState.processorIdx = 0;
   _processState.resultPath = resultPath;
+  _processState.processorName = processorName;
 };
 
 const _nextProcessor = () => {
@@ -31,40 +34,54 @@ const _nextProcessor = () => {
     _nextProcessor);
 };
 
+const _shouldProcessorBeIgnored = (processorName) => {
+  if (!processorName.length
+    || (_processState.processorName != undefined && _processState.processorName != processorName)) {
+    winston.info('Processor is ignored: %s', processorName)
+    return true;
+  } else {
+    return false;
+  }
+}
+
 const _process = (processorIdx, nextProcessor) => {
+  winston.debug(33, _processState.processorIdx)
   if (!_processState.processorPaths.length) {
-    console.log(`No processors to be used. Process terminated.`)
+    winston.info(`No processors to be used. Process terminated.`)
     return;
   }
   if (_processState.processorPaths.length == processorIdx) {
-    console.log('Finished processing by all processors');
+    winston.info('Finished processing by all processors');
     return;
   }
 
   const processorPath = _processState.processorPaths[processorIdx];
   const processorName = extractFileName(processorPath);
-  if (!processorName.length) _process(processors, processorIdx + 1);
 
-  const resultPath = path.resolve(_processState.resultPath, `${processorName}.result`);
-  console.log(`Start processing with ${processorName} \nResult: ${resultPath}`);
-  const ws = fs.createWriteStream(
-    path.resolve(_processState.resultPath, `${processorName}.result`), 
-    {
-      flags: 'w', 
-      defaultEncoding: 'utf8' 
-    });
-
-  const processorModule = require(processorPath).default;
-  processorModule(_processState.dataPaths, 0, ws, nextProcessor);
+  if (_shouldProcessorBeIgnored(processorName)) {
+    _nextProcessor();
+  } else {
+    const resultPath = path.resolve(_processState.resultPath, `${processorName}.result`);
+    winston.info(`Start processing with ${processorName} \nResult: ${resultPath}`);
+    const ws = fs.createWriteStream(
+      path.resolve(_processState.resultPath, `${processorName}.result`),
+      {
+        flags: 'w',
+        defaultEncoding: 'utf8'
+      });
+  
+    const processorModule = require(processorPath).default;
+    processorModule(_processState.dataPaths, 0, ws, nextProcessor);
+  }
 };
 
-const process = (dataPaths, processorPaths, resultPath) => {
+const startProcess = (dataPaths, processorPaths, resultPath, processorName) => {
   if (!dataPaths.length) {
-    console.log(`No file to process. Process ended`);
+    winston.info(`No file to process. Process ended`);
   } else {
-    _initProcessorState(dataPaths, processorPaths, resultPath);
+    _initProcessorState(dataPaths, processorPaths, resultPath, processorName);
     _process(0, _nextProcessor);
   }
 };
 
-exports.default = process;
+exports.default = startProcess;

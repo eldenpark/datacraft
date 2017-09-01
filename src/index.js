@@ -1,20 +1,33 @@
 const fs = require('fs');
 const path = require('path');
+const winston = require('winston');
 
 const getAllPaths = require('./utils/pathUtils').walkPromise;
-const process = require('./utils/processUtils').default;
+const startProcess = require('./utils/processUtils').default;
 
 const PROCESSOR_PATH = path.resolve(__dirname, 'processors');
 const RESULT_PATH = path.resolve(__dirname, '..', 'result');
 const DATA_PATH = path.resolve(__dirname, '..', 'data');
 
 /**
+ * Logging configuration
+ */
+winston.level = 'info';
+
+/**
+ * ...
+ */
+const processorName = process.argv[2];
+winston.info('Processor specified:', processorName)
+
+
+/**
  * Entry point of the application.
  */
 Promise.all([getAllPaths(DATA_PATH), getAllPaths(PROCESSOR_PATH)])
   .then(res => {
-    process(res[0], res[1], RESULT_PATH);
+    startProcess(res[0], res[1], RESULT_PATH, processorName);
   })
   .catch(err => {
-    console.log(err);
+    winston.erro(err);
   })
