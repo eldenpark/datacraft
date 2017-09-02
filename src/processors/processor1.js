@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const winston = require('winston');
 
 const minify = require('../utils/stringUtils').minify;
 
@@ -19,4 +20,4 @@ const doProcess = (paths, i, ws, done) => {
   doProcess(paths, i + 1, ws, done);
 };
 
-exports.default = process;
+exports.default = doProcess;

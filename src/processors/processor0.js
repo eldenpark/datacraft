@@ -18,7 +18,7 @@ const doProcess = (paths, i, ws, done) => {
     winston.info(`Finished processing with ${__filename}`);
     return done();
   }
-  // console.log(`Processing file: ${paths[i]}`);
+  winston.debug(`Processing file: ${paths[i]}`);
 
   let prevLines = [];
   let prevLinesSplit = [];

@@ -12,7 +12,8 @@ const DATA_PATH = path.resolve(__dirname, '..', 'data');
 /**
  * Logging configuration
  */
-winston.level = 'info';
+winston.level = process.env.NODE_ENV === 'development' ? 'debug' : 'info';
+winston.info("Debug level: %s", winston.level);
 
 /**
  * ...
