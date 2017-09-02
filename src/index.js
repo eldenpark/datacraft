@@ -27,6 +27,7 @@ winston.info('Processor specified:', processorName)
  */
 Promise.all([getAllPaths(DATA_PATH), getAllPaths(PROCESSOR_PATH)])
   .then(res => {
+    winston.info('Number of files to process: %s', res[0].length);
     startProcess(res[0], res[1], RESULT_PATH, processorName);
   })
   .catch(err => {
