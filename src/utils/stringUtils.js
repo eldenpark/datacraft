@@ -18,7 +18,7 @@ const split = (text) => {
   if (word.length) {
     res.push(word);
   }
-  return res
+  return res;
 };
 
 const REDUNDANT_WHITESPACE_REGEX = /(\s{2,})(?=(?:[^\'"]*[\'"][^\'"]*[\'"])*[^\'"]*$)/g;

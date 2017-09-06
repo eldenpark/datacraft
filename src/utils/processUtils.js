@@ -45,7 +45,6 @@ const _shouldProcessorBeIgnored = (processorName) => {
 }
 
 const _process = (processorIdx, nextProcessor) => {
-  winston.debug(33, _processState.processorIdx)
   if (!_processState.processorPaths.length) {
     winston.info(`No processors to be used. Process terminated.`)
     return;
