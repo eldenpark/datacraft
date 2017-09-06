@@ -9,8 +9,9 @@
     "start": "node ./src/index.js"
   },
   "dependencies": {
-    "acorn": "^5.1.1",
+    "js-tokens": "^3.0.2",
     "nodemon": "^1.11.0",
+    "ramda": "^0.24.1",
     "winston": "^2.3.1"
   }
 }

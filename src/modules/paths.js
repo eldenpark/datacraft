@@ -83,12 +83,6 @@ const walkPromise = (dir) => {
   return pr;
 };
 
-var f = (Datacraft) => {
-  Datacraft.prototype.getAllPaths = walkPromise;
-}
-
-module.exports = {
-  walk,
-  walkPromise,
-  default: f
+exports.default = function(module) {
+  module.prototype.getAllPaths = walkPromise;
 }
