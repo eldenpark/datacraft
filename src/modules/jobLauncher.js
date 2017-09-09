@@ -23,38 +23,24 @@ exports.default = function(module) {
     });
   }
 
-  const _getStore = function() {
-    return {
-      in: {},
-      out: {}
-    }
-  }
-
   const _runTaskQueue = function(res) {
-    _runSingleTask.call(this, 0, _getStore()).then(res => {
-      // console.log(123, res);
+    _runSingleTask.call(this, 0, {}).then(res => {
     });
-    // _runFirstTask.call(this, res.tasks[0])
-    //   .then(_runNextTask.bind(this, res.task[1]))
   };
 
-  // const _runFirstTask = function(task) {
-  //   if (R.path(['config', 'stream'], task) === 'DR') {
-  //     return this.stream().dataReadChain(task.name, task.body);
-  //   }
-  // };
-
-  const _runSingleTask = function(taskIdx, input) {
+  const _runSingleTask = function(taskIdx, store) {
     if (taskIdx >= this.state.tasks.length) {
       winston.info(`All over`);
       return;
     }
+
     const task = this.state.tasks[taskIdx];
+    this.state.taskName = task.name;
     const streamType = _getStreamType(task);
     winston.info(`Run single task at ${taskIdx}: ${task.name}, ${streamType}`);
     
     return this.stream()
-      [streamType](task, input)
+      [streamType](task, store)
       .then(res => {
         _runSingleTask.call(this, taskIdx + 1, res);
       })
@@ -82,4 +68,10 @@ exports.default = function(module) {
     }
     return job;
   };
+
+  const _hydrateInWithOut = function(store) {
+    store.in = Object.assign({}, store.out)
+    store.out = {};
+    return store;
+  }
 };

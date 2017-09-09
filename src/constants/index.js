@@ -1,3 +1,1 @@
-exports.default = {
-  SEPARATOR: '%NWL%'
-}
+exports.SEPARATOR = '%NWL%';
