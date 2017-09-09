@@ -14,25 +14,24 @@ const name = (elem) => {
   return regex2.test(elem);
 };
 
-task1.body = function(rl, out, done) {
+task1.body = function(rl, store, done) {
   let names = [];
   rl.on('line', (line) => {
     line = line.trim();
     var tokens = line.match(jsTokens);
 
     tokens.map((elem) => {
-      // console.log(elem)
       if (name(elem)) {
         names.push(elem);
-        // names.add(elem);
       }
     });
   });
 
   rl.on('close', () => {
     rl.input.destroy();
-    out = out.concat(names);
-    done(out);
+    store.out.tokens = store.out.tokens || [];
+    store.out.tokens = store.out.tokens.concat(names);
+    done(store);
   });
 }
 
@@ -41,7 +40,8 @@ task2.name = 'task2'
 task2.config = {
   stream: 'RW'
 }
-task2.body = function (rl, out, done) {
+task2.body = function (rl, store, done) {
+  console.log(store.out.tokens.length);
 }
 
 exports.default = {

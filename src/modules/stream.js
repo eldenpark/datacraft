@@ -4,14 +4,24 @@ const readline = require('readline');
 const path = require('path');
 const R = require('ramda');
 
+const { createReadline, createWriteStream, createReadStream } = require('../utils/streamUtils');
+
 exports.default = function(module) {
   module.prototype.stream = function() {
     return {
-      dataReadChain: _dataReadChain.bind(this)
+      dataReadChain: _dataReadChain.bind(this),
+      readWrite: _readWrite.bind(this)
     }
   };
 
-  const _dataReadChain = function(taskName, taskBody) {
+  /**
+   * ...
+   * @param {*} task 
+   * @param {*} store 
+   */
+  const _dataReadChain = function(task, store) {
+    const taskName = task.name;
+    const taskBody = task.body;
     winston.info(`Data read stream is initiated for ${taskName}`);
     
     const { dataPaths } = this.config;
@@ -19,64 +29,75 @@ exports.default = function(module) {
       this.state.dataIdx = 0;
     }
 
-    var rl = readline.createInterface({
-      input: fs.createReadStream(dataPaths[this.state.dataIdx])
-    });
+    const readStream = createReadStream(dataPaths[this.state.dataIdx]);
+    const writeStream = createWriteStream(this.config.jobName, taskName, this.config.resultPath);
+    var rl = createReadline(readStream, writeStream);
 
     this.state.taskBody = taskBody;
+    this.state.writeStream = writeStream;
     return new Promise((resolve, reject) => {
-      _executeReadTaskSingle.call(this, rl, [], resolve);
+      _executeDataReadTaskSingle.call(this, rl, store, resolve);
     });
   };
 
-  const _executeReadTaskSingle = function(rl, out, resolve) {
+  /**
+   * ...
+   * @param {*} task 
+   * @param {*} store 
+   */
+  const _readWrite = function(task, store) {
+    const taskName = task.name;
+    const taskBody = task.body;
+
+    const readStream = createReadStream(null, this.config.dataPaths);
+    const writeStream = createWriteStream(this.config.jobName, taskName, this.config.resultPath);
+    const rl = createReadline(readStream, writeStream);
+
+    this.state.taskBody = taskBody;
+    return new Promise((resolve, reject) => {
+      _executeReadWriteTaskSingle.call(this, rl, store, resolve);
+    });
+  };
+
+  /**
+   * ...
+   * @param {*} rl
+   * @param {*} out 
+   * @param {*} resolve 
+   */
+  const _executeDataReadTaskSingle = function(rl, out, resolve) {
     const { taskBody } = this.state;
     taskBody(rl, out, _doneDataReadTaskSingle.bind(this, resolve));
   };
 
-  const _doneDataReadTaskSingle = function(resolve, out) {
-    winston.debug(`Finished reading: ${this.config.dataPaths[this.state.dataIdx]}`)
+  /**
+   * ...
+   * @param {*} resolve 
+   * @param {*} store 
+   */
+  const _doneDataReadTaskSingle = function(resolve, store) {
+    winston.debug(`Finished reading: ${this.config.dataPaths[this.state.dataIdx]}`);
 
     if (++this.state.dataIdx >= this.config.dataPaths.length) {
-      winston.debug(`Result: ${out.length}`);
-      resolve(out);
-      return;
+      winston.debug(`Result: ${store.out}`);
+      resolve(store);
+      return "Done data read task";
     }
 
-    const readStream = fs.createReadStream(this.config.dataPaths[this.state.dataIdx]);
-    var rl = readline.createInterface({
-      input: readStream
-    });
-    _executeReadTaskSingle.call(this, rl, out, resolve);
+    const readStream = createReadStream(this.config.dataPaths[this.state.dataIdx]);
+    const writeStream = this.state.writeStream;
+    var rl = createReadline(readStream, writeStream);
+    _executeDataReadTaskSingle.call(this, rl, store, resolve);
   };
 
-
-
-  // const _dataReadStreamChain = function() {
-    
-  // };
-
-  // const _readWriteStream = function(dataIdx) {
-  //   console.log(1, this)
-
-  //   const resultDirectory = path.resolve(this.config.resultPath, this.config.jobName);
-  //   if (!fs.existsSync(resultDirectory)) {
-  //     fs.mkdirSync(resultDirectory);
-  //   }
-  //   const resultPath = path.resolve(resultDirectory, `${taskName}-${new Date().getTime()}.result`);
-
-  //   winston.info(`Start processing with ${taskName}`);
-  //   winston.info(`Result path: ${resultPath}`);
-
-  //   const ws = fs.createWriteStream(
-  //     resultPath,
-  //     {
-  //       flags: 'w',
-  //       defaultEncoding: 'utf8'
-  //     });
-  // };
-
-  // const _doneProcessingSingleFile = function() {
-
-  // };
+  /**
+   * ...
+   * @param {*} rl 
+   * @param {*} store 
+   * @param {*} resolve 
+   */
+  const _executeReadWriteTaskSingle = function(rl, store, resolve) {
+    const { taskBody } = this.state;
+    taskBody(rl, store, {});
+  };
 };
