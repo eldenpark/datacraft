@@ -23,8 +23,17 @@ exports.default = function(module) {
     });
   }
 
+  const _getStore = function() {
+    return {
+      in: {},
+      out: {}
+    }
+  }
+
   const _runTaskQueue = function(res) {
-    _runSingleTask.call(this, 0, {});
+    _runSingleTask.call(this, 0, _getStore()).then(res => {
+      // console.log(123, res);
+    });
     // _runFirstTask.call(this, res.tasks[0])
     //   .then(_runNextTask.bind(this, res.task[1]))
   };
@@ -42,11 +51,10 @@ exports.default = function(module) {
     }
     const task = this.state.tasks[taskIdx];
     const streamType = _getStreamType(task);
-    console.log(task)
-    winston.debug(`Run single task at ${taskIdx}: ${task.name}, ${streamType}`);
+    winston.info(`Run single task at ${taskIdx}: ${task.name}, ${streamType}`);
     
-    this.stream()
-      [streamType](task.name, task.body)
+    return this.stream()
+      [streamType](task, input)
       .then(res => {
         _runSingleTask.call(this, taskIdx + 1, res);
       })
@@ -60,14 +68,12 @@ exports.default = function(module) {
     switch(stream) {
       case 'DR':
         return 'dataReadChain';
+      case 'RW':
+        return 'readWrite';
       default:
         return 'dataReadChain';
     }
   };
-
-  const _runNextTask = function(task, input) {
-    
-  }
 
   const _resolveJobPath = function(jobPath, jobName) {
     const job = path.resolve(jobPath, jobName, `${jobName}.js`);
