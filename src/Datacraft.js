@@ -23,6 +23,7 @@ const Datacraft = function(config) {
   this.state = {
     tasks: [],
     dataIdx: undefined,
+    
   };
 };
 

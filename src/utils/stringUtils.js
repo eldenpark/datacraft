@@ -1,7 +1,4 @@
-/**
- * ...
- */
-const split = (text) => {
+exports.split = (text) => {
   var res = []
   var word = ''
   for (var i = 0; i < text.length; i++) {
@@ -26,15 +23,11 @@ const CONTROLLING_SYMBOL_REGEX = /(\\r\\n|\\n|\\t|\r\n|\n)+(?=(?:[^\'"]*[\'"][^\
 const REDUNDANT_WHITESPACE_REGEX2 = /(\s{2,})/g;
 const CONTROLLING_SYMBOL_REGEX2 = /(\\r\\n|\\n|\\t|\r\n|\n)+/g;
 
-/**
- * ...
- */
-const minify = (text) => {
+exports.minify = (text) => {
   text = text.replace(CONTROLLING_SYMBOL_REGEX2, '');
   return text.replace(REDUNDANT_WHITESPACE_REGEX2, ' ');
 }
 
-module.exports = {
-  split,
-  minify
+exports.concat = (text, SEP, word) => {
+  return `${text}${SEP}${word}`;
 }

@@ -11,7 +11,7 @@ exports.default = function(module) {
     return {
       dataReadChain: _dataReadChain.bind(this),
       readWrite: _readWrite.bind(this)
-    }
+    };
   };
 
   /**
@@ -65,9 +65,9 @@ exports.default = function(module) {
    * @param {*} out 
    * @param {*} resolve 
    */
-  const _executeDataReadTaskSingle = function(rl, out, resolve) {
+  const _executeDataReadTaskSingle = function(rl, store, resolve) {
     const { taskBody } = this.state;
-    taskBody(rl, out, _doneDataReadTaskSingle.bind(this, resolve));
+    taskBody(rl, store, _doneDataReadTaskSingle.bind(this, resolve));
   };
 
   /**
@@ -79,7 +79,8 @@ exports.default = function(module) {
     winston.debug(`Finished reading: ${this.config.dataPaths[this.state.dataIdx]}`);
 
     if (++this.state.dataIdx >= this.config.dataPaths.length) {
-      winston.debug(`Result: ${store.out}`);
+      winston.info(`Finishing [ dataReadStream ] for ${this.state.taskName}`);
+      // winston.debug(`Result: ${store.out}`);
       resolve(store);
       return "Done data read task";
     }
@@ -98,6 +99,12 @@ exports.default = function(module) {
    */
   const _executeReadWriteTaskSingle = function(rl, store, resolve) {
     const { taskBody } = this.state;
-    taskBody(rl, store, {});
+    taskBody(rl, store, _doneReadWriteTaskSingle.bind(this, resolve));
   };
+
+  const _doneReadWriteTaskSingle = function(resolve, store) {
+    winston.info(`Finishing [ readWriteStream ] for ${this.state.taskName}`);
+    resolve(store);
+  };
+  
 };
