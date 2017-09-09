@@ -18,19 +18,20 @@ task2.body = function (rl, store, done) {
   const numTokens = store.tokens.length;
   const numLines = store.lines.length;
 
-  let text = '';
+  let text = undefined;
   let randomIdx = undefined;
   let randomToken = undefined;
   let randomLine = undefined;
   let truth = undefined;
   let queryLine = undefined;
 
-  for(let l = 0; l < 2; l++) {
+  for(let l = 0; l < 5; l++) {
+    text = '';
     randomIdx = getRandomIntInclusive(0, 9);
-    for (let i = 0; i < 1000; i++) {
-      randomToken = store.tokens[getRandomInt(0, numTokens)];
+    randomToken = store.tokens[getRandomInt(0, numTokens)];
+    
+    for (let i = 0; i < 10; i++) {
       randomLine = store.lines[getRandomInt(0, numLines)];
-  
       if (i === randomIdx) {
         truth = `${randomToken}: ${randomToken}`;
         text = (i === 0) ? truth : concat(text, SEPARATOR, truth);
