@@ -48,9 +48,6 @@ task3.body = function (rl, store, done) {
     }
   
     randomToken1 = store.tokens[getRandomInt(0, numTokens)];
-    randomToken2 = store.tokens[getRandomInt(0, numTokens)];
-    randomToken3 = store.tokens[getRandomInt(0, numTokens)];
-    randomToken4 = store.tokens[getRandomInt(0, numTokens)];
     queryLine = `${randomToken1}: ${randomToken2}.${randomToken3}({${randomToken4}: '${randomToken1}'})`;
     
     text = concat(text, SEPARATOR, queryLine);
