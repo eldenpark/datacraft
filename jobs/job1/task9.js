@@ -2,20 +2,20 @@ const { getRandomIntInclusive, getRandomInt } = require('../../src/utils/mathUti
 const { SEPARATOR } = require('../../src/constants');
 const { concat } = require('../../src/utils/stringUtils');
 
-const task8 = {};
-task8.name = 'task8'
-task8.config = {
+const task9 = {};
+task9.name = 'task9'
+task9.config = {
   stream: 'RW'
 }
 
 /**
-  Proper function argument (고유함수)
+  String replication (not as exact)
 
   e.g.
-  acceleration: new Acceleration(e.x, e.y, e.z),
-  accelerationIncludingGravity: new Acceleration(e.x, e.y, e.z),
+  _data.content[matched[i]].contents[contents[i].contentURI]
+  content[matched[i]].contents[contents[i].contentURI];
  */
-task8.body = function (rl, store, done) {
+task9.body = function (rl, store, done) {
   const out = rl.output;
   const numTokens = store.tokens.length;
   const numLines = store.lines.length;
@@ -43,15 +43,14 @@ task8.body = function (rl, store, done) {
     for (let i = 0; i < 10; i++) {
       randomLine = store.lines[getRandomInt(0, numLines)];
       if (i === randomIdx) {
-        truth = `${randomToken1}: new ${randomToken2}(${randomToken3}, ${randomToken4}, ${randomToken5});`;
+        truth = `${randomToken1}.${randomToken2}[${randomToken3}].${randomToken4}[${randomToken5}];`;
         text = (i === 0) ? truth : concat(text, SEPARATOR, truth);
       } else {
         text = (i === 0) ? randomLine : concat(text, SEPARATOR, randomLine);
       }
     }
   
-    randomToken1 = store.tokens[getRandomInt(0, numTokens)];
-    queryLine = `${randomToken1}: new ${randomToken2}(${randomToken3}, ${randomToken4}, ${randomToken5});`;
+    queryLine = `${randomToken2}[${randomToken3}].${randomToken4}[${randomToken5}];`;
     
     text = concat(text, SEPARATOR, queryLine);
     text = concat(text, SEPARATOR, randomIdx);
@@ -60,4 +59,4 @@ task8.body = function (rl, store, done) {
   done(store);
 };
 
-exports.default = task8;
+exports.default = task9;
