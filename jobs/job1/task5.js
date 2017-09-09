@@ -1,6 +1,7 @@
 const { getRandomIntInclusive, getRandomInt } = require('../../src/utils/mathUtils');
 const { SEPARATOR } = require('../../src/constants');
 const { concat } = require('../../src/utils/stringUtils');
+const { LINE_NUMBERS } = require('./meta');
 
 const task5 = {};
 task5.name = 'task5'
@@ -29,7 +30,7 @@ task5.body = function (rl, store, done) {
   let truth = undefined;
   let queryLine = undefined;
 
-  for(let l = 0; l < 5; l++) {
+  for(let l = 0; l < LINE_NUMBERS; l++) {
     text = '';
     randomIdx = getRandomIntInclusive(0, 9);
     randomToken1 = store.tokens[getRandomInt(0, numTokens)];
