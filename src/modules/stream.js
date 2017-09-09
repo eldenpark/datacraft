@@ -80,7 +80,6 @@ exports.default = function(module) {
 
     if (++this.state.dataIdx >= this.config.dataPaths.length) {
       winston.info(`Finishing [ dataReadStream ] for ${this.state.taskName}`);
-      // winston.debug(`Result: ${store.out}`);
       resolve(store);
       return "Done data read task";
     }
