@@ -1,7 +1,7 @@
 const { getRandomIntInclusive, getRandomInt } = require('../../src/utils/mathUtils');
 const { SEPARATOR } = require('../../src/constants');
 const { concat } = require('../../src/utils/stringUtils');
-const { LINE_NUMBERS } = require('./meta');
+const LINE_NUMBERS = require('./jobConfig').default.LINE_NUMBERS;
 
 const task8 = {};
 task8.name = 'task8'

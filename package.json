@@ -6,7 +6,8 @@
   "scripts": {
     "nodemon": "nodemon .src/index.js",
     "start:dev": "NODE_ENV=development node ./src/index.js",
-    "start": "node ./src/index.js"
+    "start": "node ./src/index.js",
+    "clean": "rm -r ./result/*"
   },
   "dependencies": {
     "js-tokens": "^3.0.2",
